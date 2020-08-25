@@ -7,7 +7,9 @@ package kruskal;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  *
@@ -16,7 +18,7 @@ import java.util.Scanner;
 public class Kruskal {
 
     static private ArrayList<Path> graph = new ArrayList();
-    static private int[] subTrees = null;
+    static private ArrayList<Set> subTrees = new ArrayList();
     static private ArrayList<Path> spanTree = new ArrayList();
 
     /**
@@ -28,6 +30,12 @@ public class Kruskal {
         readInput();
         processSpanTree();
         printPathLength();
+        
+        /* Example for set.
+        HashSet<Integer> set=new HashSet();
+        set.add(node1);
+        set.add(node2);
+        subTrees.add(set);*/
     }
 
     /**
