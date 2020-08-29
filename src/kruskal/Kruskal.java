@@ -7,9 +7,9 @@ package kruskal;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -30,7 +30,7 @@ public class Kruskal {
         readInput();
         processSpanTree();
         printPathLength();
-        
+
         /* Example for set.
         HashSet<Integer> set=new HashSet();
         set.add(node1);
@@ -53,10 +53,6 @@ public class Kruskal {
             graph.add(p);
         }
         Collections.sort(graph);
-        subTrees = new int[nodes];
-        for (int i = 0; i < subTrees.length; i++) {
-            subTrees[i] = -1;
-        }
     }
 
     /**
@@ -112,26 +108,26 @@ public class Kruskal {
      */
     private static void addToSpanTree(Path path) {
         spanTree.add(path);
-        if (subTrees[path.node1] == -1) {
-            if (subTrees[path.node2] == -1) {
-                subTrees[path.node1] = path.node1;
-                subTrees[path.node2] = path.node1;
+        Set<Integer> s1 = getSubtree(path.node1);
+        Set<Integer> s2 = getSubtree(path.node2);
+        if (s1 == null) {
+            if (s2 == null) {
+                Set<Integer> s = new TreeSet();
+                s.add(path.node1);
+                s.add(path.node2);
+                subTrees.add(s);
             } else {
-                subTrees[path.node1] = subTrees[path.node2];
+                s2.add(path.node1);
             }
         } else {
-            if (subTrees[path.node2] == -1) {
-                subTrees[path.node2] = subTrees[path.node1];
+            if (s2 == null) {
+                s1.add(path.node2);
             } else {
-                int r1 = subTrees[path.node1];
-                int r2 = subTrees[path.node2];
-                for (int i = 0; i < subTrees.length; i++) {
-                    if (subTrees[i] == r2) {
-                        subTrees[i] = r1;
-                    }
-                }
+                s1.addAll(s2);
+                subTrees.remove(s2);
             }
         }
+
     }
 
     /**
@@ -142,7 +138,12 @@ public class Kruskal {
      * is no subtree contains the node.
      */
     private static boolean subtreesContains(int node) {
-        return subTrees[node] != -1;
+        for (int i = 0; i < subTrees.size(); i++) {
+            if (subTrees.get(i).contains(node)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -152,8 +153,13 @@ public class Kruskal {
      * @return the root id of the subtree if node is in a subtree, otherwise
      * return -1.
      */
-    private static int getSubtree(int node) {
-        return subTrees[node];
+    private static Set getSubtree(int node) {
+        for (int i = 0; i < subTrees.size(); i++) {
+            if (subTrees.get(i).contains(node)) {
+                return subTrees.get(i);
+            }
+        }
+        return null;
     }
 
     /**
@@ -167,6 +173,9 @@ public class Kruskal {
             return true;
         }
         if (getSubtree(path.node1) != getSubtree(path.node2)) {
+            return true;
+        }
+        if (getSubtree(path.node1) == null && getSubtree(path.node2) == null) {
             return true;
         }
         return false;
